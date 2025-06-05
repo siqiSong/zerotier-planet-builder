@@ -1,6 +1,4 @@
-import os
 import json
-from re import M
 
 
 def get_moon():
@@ -16,10 +14,10 @@ def get_patch():
 
 def patch():
     moon = get_moon()
-    patch = get_patch()
+    patch_data = get_patch()
 
     identity = moon["roots"][0]["identity"]
-    moon["roots"][0]["stableEndpoints"] = patch["stableEndpoints"]
+    moon["roots"][0]["stableEndpoints"] = patch_data["stableEndpoints"]
 
     # 修改moon  
     with open("/var/lib/zerotier-one/moon.json", "w") as f:
@@ -29,13 +27,13 @@ def patch():
     #print(moon)
 
     # 修改world
-    moon["roots"][0]["stableEndpoints"] = get_patch()["stableEndpoints"]
+    moon["roots"][0]["stableEndpoints"] = patch_data["stableEndpoints"]
     text = f"""// Los Angeles
 	roots.push_back(World::Root());
 	roots.back().identity = Identity("{identity}");
 """
 
-    for i in get_patch()["stableEndpoints"]:
+    for i in patch_data["stableEndpoints"]:
         text += f'\n        roots.back().stableEndpoints.push_back(InetAddress("{i}"));'
 
     # 生成文件
