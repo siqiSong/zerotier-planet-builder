@@ -11,8 +11,15 @@ jobs:
     - uses: actions/checkout@v4
     - name: Edit the planet IP
       run: sed -i "s/1.1.1.1/${{ secrets.IP }}/g" ./patch/patch.json
-    - name: Edit username and password
-      run: sed -i "s/admin/${{ secrets.USERNAME }}/g" ./init.sh && sed -i "s/zero-ui/${{ secrets.PASSWORD }}/g" ./init.sh
+    - name: Install ztncui dependencies for password hashing
+      working-directory: ztncui/src
+      run: npm ci
+    - name: Create ztncui administrator password file
+      working-directory: ztncui/src
+      env:
+        ZTNCUI_USERNAME: ${{ secrets.USERNAME }}
+        ZTNCUI_PASSWORD: ${{ secrets.PASSWORD }}
+      run: node ../../.github/scripts/write-ztncui-passwd.js
     - name: Build the Zerotier Planet Docker image
       run: docker build . --file Dockerfile --tag zerotier-planet
     - name: install 7zip

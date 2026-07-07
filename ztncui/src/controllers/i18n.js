@@ -1,4 +1,5 @@
 const supported = ['en', 'zh-CN'];
+const redirects = require('./redirects');
 
 const zhCN = {
   'Home': '首页',
@@ -202,6 +203,6 @@ exports.middleware = function(req, res, next) {
 
 exports.setLanguage = function(req, res) {
   const lang = normalize(req.params.lang);
-  res.cookie('lang', lang, { maxAge: 365 * 24 * 60 * 60 * 1000, sameSite: 'lax' });
-  res.redirect(req.query.redirect || '/');
+  res.cookie('lang', lang, { maxAge: 365 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'lax' });
+  res.redirect(redirects.safeRedirectTarget(req.query.redirect, '/'));
 };

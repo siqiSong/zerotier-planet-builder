@@ -1,10 +1,10 @@
 # Multi-account Deployment Guide
 
-This branch vendors a patched ZeroUI into `zerotier-planet-builder` and builds it into the final image. It no longer copies `/app` from `dec0dos/zero-ui:latest`.
+This version vendors a patched ztncui into `zerotier-planet-builder` and builds it into the final image. It no longer copies `/app` from `dec0dos/zero-ui:latest`.
 
 ## What changes after upgrade
 
-- The `USERNAME` / `PASSWORD` configured in GitHub Actions or `init.sh` becomes the administrator account.
+- The `USERNAME` / `PASSWORD` configured in GitHub Actions becomes the first administrator account.
 - Existing networks in `/app/backend/data/db.json` are migrated to the administrator on first startup.
 - Friends cannot register openly. The administrator generates a one-time invite code, and the friend registers with that code.
 - Normal users only see and manage networks they created.
@@ -21,6 +21,8 @@ Keep the same mounted data paths across upgrades:
 
 `/data/zerotier` preserves the controller identity and planet-related state. `/data/zero-ui` preserves users, invite codes, network metadata, names, descriptions, and owner assignments.
 
+Keep these host paths private. They contain the controller identity, user password hashes, invite metadata, and network ownership metadata.
+
 ## Build with GitHub Actions
 
 Use the existing workflow after pushing this branch to your fork:
@@ -28,10 +30,12 @@ Use the existing workflow after pushing this branch to your fork:
 1. Set or keep repository secrets:
    - `IP`: your public server IP or domain
    - `USERNAME`: administrator username
-   - `PASSWORD`: administrator password and artifact password
+   - `PASSWORD`: administrator password and artifact password. Use at least 10 characters.
 2. Run the `zerotier-planet-builder` workflow.
 3. Download `zerotier-planet.tar.gz.7z`.
 4. Extract it with `PASSWORD` to get `zerotier-planet.tar.gz`.
+
+The workflow hashes `PASSWORD` into `ztncui/src/etc/default.passwd` before building the image. The plaintext password is not committed to the repository.
 
 ## Build on the server
 
@@ -40,10 +44,11 @@ If Docker Hub is reachable from the server:
 ```sh
 git clone <your-fork-url> zerotier-planet-builder
 cd zerotier-planet-builder
-git checkout codex/zerotier-multi-account
 sed -i "s/1.1.1.1/<YOUR_SERVER_IP_OR_DOMAIN>/g" ./patch/patch.json
 docker build . --file Dockerfile --tag zerotier-planet:multi-account
 ```
+
+For local builds, the checked-in default administrator is `admin`. Change the password immediately after first login, or generate your own `ztncui/src/etc/default.passwd` before building. The repository includes a `.dockerignore` so local runtime files such as `ztncui/src/etc/passwd`, invite metadata, and packaged tarballs are not copied into the image by accident.
 
 If Docker Hub is not reachable but you have a trusted registry mirror for the Node image, override the base image:
 
@@ -109,6 +114,8 @@ http://<YOUR_SERVER_IP_OR_DOMAIN>:4000/app
 
 If your deployment is exposed on a different external port, use that port.
 
+For internet-facing deployments, put the web UI behind HTTPS and restrict access with a firewall or reverse proxy allowlist when possible. Set a stable random `SESSION_SECRET` environment variable so sessions remain valid across container restarts. If your reverse proxy terminates HTTPS, also set `SESSION_COOKIE_SECURE=true` and forward HTTPS requests to the container.
+
 ## First login and invite flow
 
 1. Log in with the administrator `USERNAME` / `PASSWORD`.
@@ -118,22 +125,9 @@ If your deployment is exposed on a different external port, use that port.
 5. The friend opens the app, switches to `Register`, enters username, password, and invite code.
 6. After registration, the friend can create a network and manage members/routes inside that network only.
 
-## API fallback for creating invites
+## Invite recovery
 
-If the UI is unavailable but the backend is running:
-
-```sh
-TOKEN=$(curl -s http://<YOUR_SERVER_IP_OR_DOMAIN>:4000/auth/login \
-  -H 'content-type: application/json' \
-  -d '{"username":"ADMIN_USERNAME","password":"ADMIN_PASSWORD"}' \
-  | sed -n 's/.*"token":"\([^"]*\)".*/\1/p')
-
-curl -s http://<YOUR_SERVER_IP_OR_DOMAIN>:4000/auth/invites \
-  -H "Authorization: token $TOKEN" \
-  -X POST
-```
-
-The response contains the invite `code`.
+Invite generation is intentionally available from the administrator UI only. If the UI is unavailable, restore UI access first instead of trying to create invite codes through an unauthenticated endpoint.
 
 ## Verification checklist
 

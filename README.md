@@ -9,6 +9,7 @@ Inspired by [docker-zerotier-planet](https://github.com/xubiaolin/docker-zerotie
 >IP : your planet server IP.  
 USERNAME: zero-ui username.  
 PASSWORD: zero-ui password and docker image password.   
+Use at least 10 characters for `PASSWORD`.
 
 ![secrets.png](https://s2.loli.net/2022/08/29/uxcTpePls5SmbWn.png)
 - 3 . Go to Actions,click "Run workflow."
@@ -32,6 +33,8 @@ Or, if you want to mount the data to the host path
 ```sh
 docker run -d --name zerotier-server -p 4000:4000 -p 9993:9993/udp -v /data/zerotier:/var/lib/zerotier-one/controller.d -v /data/zero-ui/:/app/backend/data   zerotier-planet
 ```
+Keep the mounted data directories private. They contain your controller identity, user password hashes, invite metadata, and network owner metadata.
+
 Note that each run of the docker image produces a unique ID related file. If you create a new docker image, you need to copy the related files under/var/lib/zerotier-one under the original image.
 ```sh
  docker cp zerotier-server:/var/lib/zerotier-one backup
@@ -43,6 +46,8 @@ The default `USERNAME` / `PASSWORD` account is the administrator. Friends cannot
 The private planet file is available at `http://IP:4000/app/planet`.
 
 The web UI also shows this planet download/subscription link before and after login.
+
+For internet-facing deployments, use HTTPS in front of the web UI and restrict access with firewall/security-group rules when possible. Set a stable `SESSION_SECRET` environment variable; when HTTPS is terminated by a reverse proxy, also set `SESSION_COOKIE_SECURE=true`.
 
 See [Multi-account Deployment Guide](docs/multi-account-deployment.md) for safe upgrade, invite-code use, verification, and rollback steps.
 
@@ -67,6 +72,7 @@ Andriod: https://github.com/kaaass/ZerotierFix
 >IP : 你的 planet 服务端 IP,就是公网IP  
 USERNAME: 登陆zero-ui的用户名  
 PASSWORD: zero-ui 的密码，和docker的镜像压缩包密码.   
+`PASSWORD` 建议至少 10 位。
 
 ![secrets.png](https://s2.loli.net/2022/08/29/uxcTpePls5SmbWn.png)
 - 3 . 点击 Actions,点击 "Run workflow."
@@ -90,6 +96,8 @@ docker run -d --name zerotier-server -p 4000:4000 -p 9993:9993/udp  zerotier-pla
 ```sh
 docker run -d --name zerotier-server -p 4000:4000 -p 9993:9993/udp -v /data/zerotier:/var/lib/zerotier-one/controller.d -v /data/zero-ui/:/app/backend/data   zerotier-planet
 ```
+请保护好挂载的数据目录，里面包含控制器身份、用户密码哈希、邀请码元数据和网络归属信息。
+
 注意每次运行docker镜像生产唯一的id相关文件，如果你建立新docker镜像的话，你需要复制原来镜像下/var/lib/zerotier-one下的相关文件  
 ```sh
  docker cp zerotier-server:/var/lib/zerotier-one backup
@@ -101,6 +109,8 @@ docker run -d --name zerotier-server -p 4000:4000 -p 9993:9993/udp -v /data/zero
 私有 planet 文件地址是 `http://IP:4000/app/planet`。
 
 Web 界面会在登录前和登录后展示这个 planet 下载/订阅链接。
+
+如果 Web 界面对公网开放，建议在前面加 HTTPS，并尽量用防火墙/安全组限制访问来源。建议设置稳定的 `SESSION_SECRET` 环境变量；如果由反向代理终止 HTTPS，再设置 `SESSION_COOKIE_SECURE=true`。
 
 安全升级、邀请码使用、验证和回滚步骤请看 [多账号部署指南](docs/multi-account-deployment.md)。
 

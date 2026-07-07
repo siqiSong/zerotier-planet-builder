@@ -16,6 +16,7 @@ const bodyParser = require('body-parser');
 const expressValidator = require('express-validator');
 const session = require('express-session');
 const helmet = require('helmet');
+const crypto = require('crypto');
 
 const index = require('./routes/index');
 const invites = require('./routes/invites');
@@ -25,7 +26,9 @@ const i18n = require('./controllers/i18n');
 
 const app = express();
 
-const session_secret = Math.random().toString(36).substring(2,12);
+const sessionSecret = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
+const secureSessionCookie = /^true$/i.test(process.env.SESSION_COOKIE_SECURE || '');
+if (secureSessionCookie) app.set('trust proxy', 1);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -37,9 +40,15 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(session({
+  name: 'ztncui.sid',
   resave: false,
   saveUninitialized: false,
-  secret: session_secret
+  secret: sessionSecret,
+  cookie: {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: secureSessionCookie
+  }
 }));
 app.use(expressValidator());
 app.use(cookieParser());

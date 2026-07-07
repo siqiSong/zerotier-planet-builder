@@ -8,6 +8,7 @@ const express = require('express');
 const auth = require('../controllers/auth');
 const authenticate = auth.authenticate;
 const multiAccount = require('../controllers/multiAccount');
+const redirects = require('../controllers/redirects');
 const router = express.Router();
 
 /** Redirect logged user to controler page */
@@ -63,7 +64,7 @@ router.post('/login', async function(req, res) {
         req.session.user = user;
         req.session.success = 'Authenticated as ' + user.name;
         if (user.pass_set) {
-          res.redirect(req.query.redirect || '/controller');
+          res.redirect(redirects.safeRedirectTarget(req.query.redirect, '/controller'));
         } else {
           res.redirect('/users/' + user.name + '/password');
         }

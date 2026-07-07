@@ -25,6 +25,10 @@ then export ZT_ADDR="http://localhost:${ZT_PORT}"
 fi
 
 cp /var/lib/zerotier-one/planet /app/frontend/build/planet
+if [ ! -f /app/ztncui/src/etc/passwd ]; then
+  cp /app/ztncui/src/etc/default.passwd /app/ztncui/src/etc/passwd
+  chmod 600 /app/ztncui/src/etc/passwd
+fi
 echo Run zerotier...
 zerotier-one -p$ZT_PORT -d
 echo Waiting for controller API...
