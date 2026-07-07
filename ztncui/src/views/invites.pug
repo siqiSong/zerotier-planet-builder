@@ -1,0 +1,35 @@
+//-
+  ztncui invite administration
+
+extends controller_layout
+
+block content
+  h1= title
+
+  form(method='POST' action='/invites')
+    button.btn.btn-primary(type='submit')
+      span.glyphicon.glyphicon-plus
+      |  Create invite
+
+  table.table.table-responsive.table-striped.table-hover(style='margin-top: 20px')
+    tr
+      th(width='35%') Invite code
+      th(width='20%') Created by
+      th(width='20%') Created at
+      th(width='25%') Status
+    each invite in invites
+      tr
+        td
+          code= invite.code
+        td= invite.createdBy
+        td= invite.createdAt
+        td
+          if invite.usedAt
+            | Used by #{invite.usedBy} at #{invite.usedAt}
+          else
+            span.label.label-success Active
+    else
+      tr
+        td(colspan='4')
+          .alert.alert-info
+            strong There are no invite codes yet.

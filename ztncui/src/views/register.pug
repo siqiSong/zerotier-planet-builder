@@ -1,0 +1,51 @@
+//-
+  ztncui invite registration
+
+extends login_layout
+
+block login_content
+
+  .row
+    .col-sm-12
+      h1= title
+
+      if message
+        .alert.alert-danger
+          strong= message
+
+  form.form-horizontal(method='POST' action='')
+    .form-group.row
+      .col-sm-2
+        label.control-label(for='username') Username:
+      .col-sm-10
+        .input-group
+          span.input-group-addon
+            i.glyphicon.glyphicon-user
+          input#username.form-control(type='text' name='username' placeholder='Choose your username' value=(form && form.username ? form.username : ''))
+
+    .form-group.row
+      .col-sm-2
+        label.control-label(for='password') Password:
+      .col-sm-10
+        .input-group
+          span.input-group-addon
+            i.glyphicon.glyphicon-lock
+          input#password.form-control(type='password' name='password' placeholder='Choose your password')
+
+    .form-group.row
+      .col-sm-2
+        label.control-label(for='inviteCode') Invite code:
+      .col-sm-10
+        .input-group
+          span.input-group-addon
+            i.glyphicon.glyphicon-envelope
+          input#inviteCode.form-control(type='text' name='inviteCode' placeholder='Paste your invite code' value=(form && form.inviteCode ? form.inviteCode : ''))
+
+    .form-group.row
+      .col-sm-2
+      .col-sm-10
+        button.btn.btn-primary(type='submit') Register
+        = ' '
+        a.btn.btn-default(href='/login' role='button') Login
+        = ' '
+        a.btn.btn-default(href='/' role='button') Cancel

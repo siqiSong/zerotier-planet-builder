@@ -37,6 +37,15 @@ Note that each run of the docker image produces a unique ID related file. If you
  docker cp zerotier-server:/var/lib/zerotier-one backup
 ```
 Open http://IP:4000, use your secrets USERNAME and PASSWORD to login.   
+## Multi-account mode
+The default `USERNAME` / `PASSWORD` account is the administrator. Friends cannot register directly. Log in as the administrator, generate a one-time invite code, and send that code to the friend. Each friend can create and manage only their own networks.
+
+The private planet file is available at `http://IP:4000/app/planet`.
+
+The web UI also shows this planet download/subscription link before and after login.
+
+See [Multi-account Deployment Guide](docs/multi-account-deployment.md) for safe upgrade, invite-code use, verification, and rollback steps.
+
 ## For client  
 Replace your planet file:  
 Download your planet: http://IP:4000/app/planet  
@@ -86,6 +95,15 @@ docker run -d --name zerotier-server -p 4000:4000 -p 9993:9993/udp -v /data/zero
  docker cp zerotier-server:/var/lib/zerotier-one backup
 ```
 打开 http://IP:4000, 用你设置的secrets USERNAME 和 PASSWORD 登陆.  
+## 多账号模式
+默认的 `USERNAME` / `PASSWORD` 账号是管理员。朋友不能直接开放注册。请先用管理员登录，生成一次性邀请码，再把邀请码发给朋友。每个朋友只能创建和管理自己的网络。
+
+私有 planet 文件地址是 `http://IP:4000/app/planet`。
+
+Web 界面会在登录前和登录后展示这个 planet 下载/订阅链接。
+
+安全升级、邀请码使用、验证和回滚步骤请看 [多账号部署指南](docs/multi-account-deployment.md)。
+
 ## 客户端
 替换planet文件:  
 下载planet: http://IP:4000/app/planet    
