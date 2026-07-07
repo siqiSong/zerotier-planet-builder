@@ -26,7 +26,7 @@ Keep the same mounted data paths across upgrades:
 Use the existing workflow after pushing this branch to your fork:
 
 1. Set or keep repository secrets:
-   - `IP`: `<YOUR_SERVER_IP_OR_DOMAIN>`
+   - `IP`: your public server IP or domain
    - `USERNAME`: administrator username
    - `PASSWORD`: administrator password and artifact password
 2. Run the `zerotier-planet-builder` workflow.
