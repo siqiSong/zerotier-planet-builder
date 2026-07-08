@@ -15,4 +15,8 @@ block login_content
   .alert.alert-info(style='margin-top: 20px')
     strong Planet:
     = ' '
-    a(href='/app/planet') Download / subscription link
+    a.planet-download-link(href='/app/planet') Download / subscription link
+    = ' '
+    code.planet-url-text
+    = ' '
+    button.btn.btn-default.btn-xs.planet-copy-button(type='button' data-planet-copy='true') Copy link

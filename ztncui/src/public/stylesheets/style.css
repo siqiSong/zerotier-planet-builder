@@ -118,3 +118,13 @@ input[type=radio] {
   background-image: none;
 }
 
+.planet-url-text {
+  display: inline-block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  vertical-align: middle;
+}
+
+.planet-copy-button {
+  margin-left: 4px;
+}

@@ -21,7 +21,11 @@ block login_content
         .alert.alert-info
           strong Planet:
           = ' '
-          a(href='/app/planet') Download / subscription link
+          a.planet-download-link(href='/app/planet') Download / subscription link
+          = ' '
+          code.planet-url-text
+          = ' '
+          button.btn.btn-default.btn-xs.planet-copy-button(type='button' data-planet-copy='true') Copy link
 
     form.form-horizontal(method='POST' action='')
       .form-group.row
