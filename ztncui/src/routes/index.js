@@ -7,6 +7,7 @@
 const express = require('express');
 const auth = require('../controllers/auth');
 const authenticate = auth.authenticate;
+const loginFeedback = require('../controllers/loginFeedback');
 const multiAccount = require('../controllers/multiAccount');
 const redirects = require('../controllers/redirects');
 const router = express.Router();
@@ -32,15 +33,13 @@ router.get('/logout', function(req, res) {
 });
 
 router.get('/login', guest_only, function(req, res) {
-  let message = null;
-  if (req.session.error) {
-    if (req.session.error !== 'Access denied!') {
-      message = req.session.error;
-    }
-  } else {
-    message = req.session.success;
-  }
-  res.render('login', { title: 'Login', message: message });
+  const feedback = loginFeedback.consumeLoginFeedback(req.session);
+  res.render('login', {
+    title: 'Login',
+    message: feedback.message,
+    messageClass: feedback.messageClass,
+    username: feedback.username
+  });
 });
 
 router.get('/register', guest_only, function(req, res) {
@@ -58,7 +57,8 @@ router.post('/register', guest_only, async function(req, res) {
 });
 
 router.post('/login', async function(req, res) {
-  await authenticate(req.body.username, req.body.password, function(err, user) {
+  const username = (req.body.username || '').trim();
+  await authenticate(username, req.body.password, function(err, user) {
     if (user) {
       req.session.regenerate(function() {
         req.session.user = user;
@@ -70,7 +70,8 @@ router.post('/login', async function(req, res) {
         }
       });
     } else {
-      req.session.error = 'Authentication failed, please check your username and password.'
+      req.session.error = 'Authentication failed, please check your username and password.';
+      req.session.loginUsername = username;
       res.redirect('/login');
     }
   });

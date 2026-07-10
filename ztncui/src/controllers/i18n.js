@@ -135,6 +135,8 @@ const zhCN = {
   'Note errors listed below': '请注意下方错误',
   'Please check errors below': '请检查下方错误',
   'Access denied!': '访问被拒绝！',
+  'Authentication failed, please check your username and password.': '登录失败，请检查用户名和密码。',
+  'Account created. Please log in.': '账号已创建，请登录。',
   'Error': '错误',
   'There are no users on this system': '当前系统没有用户',
   'There are no members on this network': '此网络暂无成员',

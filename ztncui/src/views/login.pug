@@ -15,7 +15,7 @@ block login_content
         h1= title
 
         if message
-          .alert.alert-info
+          .alert(class=(messageClass || 'alert-info'))
             strong= message
 
         .alert.alert-info
@@ -35,7 +35,7 @@ block login_content
           .input-group
             span.input-group-addon
               i.glyphicon.glyphicon-user
-            input#username.form-control(type='text' name='username' placeholder='Enter your username')
+            input#username.form-control(type='text' name='username' placeholder='Enter your username' value=(username || ''))
 
       .form-group.row
         .col-sm-2
